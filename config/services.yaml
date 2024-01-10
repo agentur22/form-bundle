@@ -9,6 +9,15 @@ services:
         # if you need to do this, you can override this setting on individual services
         public: false
 
+    #
+    # INSTALLER
+    #
+
+    Xxii\FormBundle\Tools\Installer:
+        public: true
+        arguments:
+            $bundle: "@=service('kernel').getBundle('XxiiFormBundle')"
+
     # controllers are imported separately to make sure they're public
     # and have a tag that allows actions to type-hint services
     Xxii\FormBundle\Controller\:

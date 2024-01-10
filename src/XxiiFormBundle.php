@@ -3,8 +3,10 @@
 namespace Xxii\FormBundle;
 
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
+use Pimcore\Extension\Bundle\Installer\InstallerInterface;
 use Pimcore\Extension\Bundle\PimcoreBundleAdminClassicInterface;
 use Pimcore\Extension\Bundle\Traits\BundleAdminClassicTrait;
+use Xxii\FormBundle\Tools\Installer;
 
 class XxiiFormBundle extends AbstractPimcoreBundle implements PimcoreBundleAdminClassicInterface
 {
@@ -20,6 +22,11 @@ class XxiiFormBundle extends AbstractPimcoreBundle implements PimcoreBundleAdmin
         return [
             '/bundles/xxiiform/js/pimcore/startup.js'
         ];
+    }
+
+    public function getInstaller(): ?InstallerInterface
+    {
+        return $this->container->get(Installer::class);
     }
 
 }
