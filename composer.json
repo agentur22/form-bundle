@@ -1,5 +1,5 @@
 {
-    "name": "xxii/form-bundle",
+    "name": "agentur22/form-bundle",
     "description": "Agentur22 Pimcore Form Builder",
     "require": {
         "pimcore/pimcore": "^11.1",
