@@ -1,0 +1,5 @@
+xxii_form:
+    resource: "@XxiiFormBundle/src/Controller/"
+    type:     annotation
+    prefix:   /
+
