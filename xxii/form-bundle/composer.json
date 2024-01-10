@@ -1,0 +1,19 @@
+{
+    "name": "xxii/form-bundle",
+    "description": "Agentur22 Pimcore Form Builder",
+    "require": {
+        "pimcore/pimcore": "^11.1",
+        "symfony/form": "^6.4"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Xxii\\FormBundle\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Agentur22 Werbe GmbH"
+        }
+    ]
+}
