@@ -79,6 +79,10 @@ class Installer extends AbstractInstaller
             $class->setName($key);
             $class->setId($classId);
 
+            $this->output->write(sprintf('#### <info>Class "%s" PATH.</info> ####', $path));
+            $this->output->write(sprintf('#### <info>Class NAME "%s" .</info> ####', $key));
+            $this->output->write(sprintf('#### <info>Class ID "%s" .</info> ####', $classId));
+
             $data = file_get_contents($path);
             $success = Service::importClassDefinitionFromJson($class, $data, false, true);
 
@@ -88,6 +92,20 @@ class Installer extends AbstractInstaller
                     $key
                 ));
             }
+
+            //DEBUGING
+            if ($success) {
+                $this->output->write(sprintf(
+                    '     <info>Class "%s" installed successfully.</info>',
+                    $key
+                ));
+            } else {
+                $this->output->write(sprintf(
+                    '     <error>Error installing class "%s".</error>',
+                    $key
+                ));
+            }
+
         }
     }
 
@@ -120,6 +138,22 @@ class Installer extends AbstractInstaller
                     $key
                 ));
             }
+
+            $this->output->write(sprintf('#### <info>field collection "%s" PATH.</info> ####', $path));
+
+            //DEBUGING
+            if ($success) {
+                $this->output->write(sprintf(
+                    '     <info>field collection "%s" installed successfully.</info>',
+                    $key
+                ));
+            } else {
+                $this->output->write(sprintf(
+                    '     <error>field collection installing class "%s".</error>',
+                    $key
+                ));
+            }
+
         }
     }
 
