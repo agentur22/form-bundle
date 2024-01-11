@@ -1,10 +1,10 @@
 {
     "name": "agentur22/form-bundle",
-    "version": "1.1.6",
+    "version": "1.1.7",
     "description": "Agentur22 Pimcore Form Builder",
     "require": {
-        "pimcore/pimcore": "^11",
-        "symfony/form": "^6"
+        "pimcore/pimcore": "^11.0",
+        "symfony/form": "^6.0"
     },
     "license": "MIT",
     "autoload": {

@@ -20,9 +20,14 @@ class Installer extends AbstractInstaller
     ];
     private string $installSourcesPath;
 
-    public function __construct()
+	protected BundleInterface $bundle;
+
+    public function __construct(
+		BundleInterface $bundle
+	)
     {
         $this->installSourcesPath = __DIR__ . './Resources/install';
+		$this->bundle = $bundle;
         parent::__construct();
     }
 

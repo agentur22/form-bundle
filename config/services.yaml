@@ -13,10 +13,10 @@ services:
     # INSTALLER
     #
 
-    Xxii\FormBundle\Tools\Installer:
+    Xxii\FormBundle\Installer:
         public: true
-#        arguments:
-#            $bundle: "@=service('kernel').getBundle('XxiiFormBundle')"
+        arguments:
+            $bundle: "@=service('kernel').getBundle('XxiiFormBundle')"
 
     # controllers are imported separately to make sure they're public
     # and have a tag that allows actions to type-hint services
