@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Xxii\FormBundle\Tools;
+namespace Xxii\FormBundle;
 
 
 use Pimcore\Extension\Bundle\Installer\AbstractInstaller;
@@ -22,7 +22,7 @@ class Installer extends AbstractInstaller
 
     public function __construct()
     {
-        $this->installSourcesPath = __DIR__ . '/../Resources/install';
+        $this->installSourcesPath = __DIR__ . './Resources/install';
         parent::__construct();
     }
 

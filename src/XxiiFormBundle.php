@@ -6,7 +6,6 @@ use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
 use Pimcore\Extension\Bundle\Installer\InstallerInterface;
 use Pimcore\Extension\Bundle\PimcoreBundleAdminClassicInterface;
 use Pimcore\Extension\Bundle\Traits\BundleAdminClassicTrait;
-use Xxii\FormBundle\Tools\Installer;
 
 class XxiiFormBundle extends AbstractPimcoreBundle implements PimcoreBundleAdminClassicInterface
 {
