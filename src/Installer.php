@@ -20,14 +20,14 @@ class Installer extends AbstractInstaller
     ];
     private string $installSourcesPath;
 
-	protected BundleInterface $bundle;
+    protected BundleInterface $bundle;
 
     public function __construct(
-		BundleInterface $bundle
-	)
+        BundleInterface $bundle
+    )
     {
-        $this->installSourcesPath = __DIR__ . './Resources/install';
-		$this->bundle = $bundle;
+        $this->installSourcesPath = __DIR__ . '/./Resources/install';
+        $this->bundle = $bundle;
         parent::__construct();
     }
 
@@ -35,6 +35,8 @@ class Installer extends AbstractInstaller
     {
         $this->installFieldCollections();
         $this->installClasses();
+
+        parent::install();
     }
 
     private function getClassesToInstall(): array
@@ -183,6 +185,11 @@ class Installer extends AbstractInstaller
         }
 
         return $results;
+    }
+
+    public function needsReloadAfterInstall(): bool
+    {
+        return true;
     }
 
 }
