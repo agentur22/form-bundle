@@ -1,0 +1,116 @@
+{% use "form_div_layout.html.twig" %}
+
+{% block form_row %}
+
+    {% if choices is defined %}
+
+        {# choices radio / dropdown #}
+        {% if multiple is defined %}
+            {% set multiType = multiple == 'true' ? 'multi' : 'nomulti' %}
+        {% else %}
+            {% set multiType = 'multinodef' %}
+        {% endif %}
+
+        {% if expanded is defined %}
+            {% set expandetType = expanded == 'true' ? 'exp' : 'noexp' %}
+        {% else %}
+            {% set expandetType = 'expnodef' %}
+        {% endif %}
+
+        {% set row_attr = row_attr|merge({class: ('field choices ' ~ multiType ~ ' ' ~ expandetType ~ ' ' ~ row_attr.class|default(''))|trim}) %}
+
+        <div {% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}>
+            <span class="label">
+            <span class="label">
+                {{ label }}
+            </span>
+            {{ form_widget(form) }}
+                {{ form_errors(form) }}
+                {{ form_help(form) }}
+        </div>
+
+    {% else %}
+
+        {% if attr.type is defined %}
+            {% set formType = attr.type %}
+        {% else %}
+            {% set formType = 'field' %}
+        {% endif %}
+
+        {% set row_attr = row_attr|merge({class: (formType ~ ' ' ~ row_attr.class|default(''))|trim}) %}
+
+        <label {% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}>
+            {{ form_widget(form) }}
+            <span class="label">
+                {{ label }}
+            </span>
+            {{ form_errors(form) }}
+            {{ form_help(form) }}
+        </label>
+    {% endif %}
+{% endblock form_row %}
+
+
+
+{% block submit_row %}
+    {% set row_attr = row_attr|merge({class: (row_attr.class|default(''))|trim}) %}
+    <div {% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}>
+        {{ block('submit_widget') }}
+    </div>
+{% endblock submit_row %}
+
+{% block submit_widget %}
+    {% set type = type|default('submit') %}
+    {% set attr = attr|merge({class: (attr.class|default('') ~ ' button')|trim}) %}
+    {# {{ block('button_widget') }} #}
+    {# TODO HArdcod Remove #}
+    <button type="submit" id="form_Absenden" name="form[Absenden]" class="button"><span>Absenden</span>
+    </button>
+{% endblock submit_widget %}
+
+ {% block checkbox_row %}
+     {% set row_attr = row_attr|merge({class: ('checkbox ' ~ row_attr.class|default(''))|trim}) %}
+     <label {% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}">
+        {{ block('checkbox_widget') }}
+         <span class="label">
+             {{ label }}
+         </span>
+     </label>
+ {% endblock checkbox_row %}
+
+ {% block radio_row %}
+     <label class="radio">
+         {{ form_widget(form) }}
+         <span class="label">
+             {{ label }}
+         </span>
+     </label>
+ {% endblock radio_row %}
+
+{% block choice_row %}
+    {% set force_error = true %}
+    {{ block('form_row') }}
+{% endblock choice_row %}
+
+{% block radio_label %}
+    {{ block('checkbox_radio_label') }}
+{% endblock radio_label %}
+
+{% block choice_widget_expanded %}
+    <span class="box">
+    {% for child in form %}
+        <label>
+            {{ form_widget(child) }}
+            <span class="label">
+                {{ child.vars.label }}
+            </span>
+        </label>
+    {% endfor %}
+    </span>
+{% endblock choice_widget_expanded %}
+
+{% block checkbox_radio_label %}
+    <span class="label">
+        {{ label }}
+    </span>
+{% endblock checkbox_radio_label %}

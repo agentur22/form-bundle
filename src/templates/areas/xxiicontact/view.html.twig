@@ -1,0 +1,80 @@
+{% if editmode %}
+    {#<div class="brick grid-container">
+        <div class="grid-x">
+            <div class="cell">
+                {{ pimcore_relation('formId', {
+                    'types': ['object'],
+                    'subtypes': {
+                        'object': ['object']
+                    },
+                    'classes': ['form']
+                }) }}
+            </div>
+        </div>
+    </div>#}
+    <h1>XXII FORM EDITMODE</h1>
+{% else %}
+    <h1>XXII FORM </h1>
+    {#{% if not pimcore_relation('formId').isEmpty() %}
+        {% set formId = pimcore_relation('formId').getElement().getId() %}
+
+        <div class="grid-container">
+
+            {% if error %}
+                <div class="grid-x">
+                    <div class="small-12 cell">
+                        <h4>
+                            {{ error }}
+                        </h4>
+                    </div>
+                </div>
+            {% else %}
+
+                {% if formTitle %}
+                    <div class="grid-x">
+                        <div class="small-12 cell">
+                            <div class="title">
+                                {{ formTitle }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="grid-x">
+                    <div class="cell">
+                        {% form_theme form 'form-layout.html.twig' %}
+                        {{ form_start(form, {'method': 'POST', 'action': '', 'attr': {'class': formCLass}}) }}
+                        <input type="hidden" name="formId" value="{{ formId }}">
+
+                        {% for field in form.children %}
+                            {% if field.vars.name != 'captcha' and not field.vars.row_attr.button is defined %}
+                                {{ form_row(field) }}
+                            {% endif %}
+                        {% endfor %}
+
+                        <label class="captcha cell field">
+                            <span class="img">
+                                {% if formData.captchaView is defined %}
+                                    <img src="data:image/png;base64,{{ formData.captchaView }}"/>
+                                {% endif %}
+                            </span>
+                            {{ form_widget(form.captcha,{"attr":{"class":""}}) }}
+                            <span class="label">
+                                Captcha
+                            </span>
+                        </label>
+
+                        {% for field in form.children %}
+                            {% if field.vars.row_attr.button  is defined %}
+                                {{ form_row(field) }}
+                            {% endif %}
+                        {% endfor %}
+
+                        {{ form_end(form, {'render_rest': false}) }}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+    {% endif %}#}
+{% endif %}
