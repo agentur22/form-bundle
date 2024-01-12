@@ -1,6 +1,6 @@
 {
     "name": "agentur22/form-bundle",
-    "version": "1.1.8",
+    "version": "1.1.9",
     "description": "Agentur22 Pimcore Form Builder",
     "require": {
         "pimcore/pimcore": "^11.0",

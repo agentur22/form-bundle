@@ -4,192 +4,146 @@
 namespace Xxii\FormBundle;
 
 
-use Pimcore\Extension\Bundle\Installer\AbstractInstaller;
 use Pimcore\Extension\Bundle\Installer\Exception\InstallationException;
+use Pimcore\Extension\Bundle\Installer\SettingsStoreAwareInstaller;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Service;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Pimcore\Model\DataObject\Fieldcollection;
 
-class Installer extends AbstractInstaller
+class Installer extends SettingsStoreAwareInstaller
 {
-    private array $classesToInstall = [
-        'XxiiForm' => 'XXII_FORM',
-        'XxiiFormEntry' => 'XXII_FORM_ENTRY'
-    ];
-    private string $installSourcesPath;
+	private array $classesToInstall = [
+		'XxiiForm' => 'XXII_FORM',
+		'XxiiFormEntry' => 'XXII_FORM_ENTRY'
+	];
+	private string $installSourcesPath = __DIR__ . '/Resources/install';
 
-    protected BundleInterface $bundle;
+	public function install(): void
+	{
+		$this->installFieldCollections();
+		$this->installClasses();
 
-    public function __construct(
-        BundleInterface $bundle
-    )
-    {
-        $this->installSourcesPath = __DIR__ . '/./Resources/install';
-        $this->bundle = $bundle;
-        parent::__construct();
-    }
+		parent::install();
+	}
 
-    public function install(): void
-    {
-        $this->installFieldCollections();
-        $this->installClasses();
+	private function getClassesToInstall(): array
+	{
+		$result = [];
+		foreach (array_keys($this->classesToInstall) as $className) {
+			$filename = sprintf('class_%s_export.json', $className);
+			$path = $this->installSourcesPath . '/class_sources/' . $filename;
+			$path = realpath($path);
 
-        parent::install();
-    }
+			if (false === $path || !is_file($path)) {
+				throw new InstallationException(sprintf(
+					'Class export for class "%s" was expected in "%s" but file does not exist',
+					$className,
+					$path
+				));
+			}
 
-    private function getClassesToInstall(): array
-    {
-        $result = [];
-        foreach (array_keys($this->classesToInstall) as $className) {
-            $filename = sprintf('class_%s_export.json', $className);
-            $path = $this->installSourcesPath . '/class_sources/' . $filename;
-            $path = realpath($path);
+			$result[$className] = $path;
+		}
 
-            if (false === $path || !is_file($path)) {
-                throw new InstallationException(sprintf(
-                    'Class export for class "%s" was expected in "%s" but file does not exist',
-                    $className,
-                    $path
-                ));
-            }
+		return $result;
+	}
 
-            $result[$className] = $path;
-        }
+	private function installClasses(): void
+	{
+		$classes = $this->getClassesToInstall();
 
-        return $result;
-    }
+		$mapping = $this->classesToInstall;
 
-    private function installClasses(): void
-    {
-        $classes = $this->getClassesToInstall();
+		foreach ($classes as $key => $path) {
+			$class = ClassDefinition::getByName($key);
 
-        $mapping = $this->classesToInstall;
+			if ($class) {
+				$this->output->write(sprintf(
+					'     <comment>WARNING:</comment> Skipping class "%s" as it already exists',
+					$key
+				));
 
-        foreach ($classes as $key => $path) {
-            $class = ClassDefinition::getByName($key);
+				continue;
+			}
 
-            if ($class) {
-                $this->output->write(sprintf(
-                    '     <comment>WARNING:</comment> Skipping class "%s" as it already exists',
-                    $key
-                ));
+			$class = new ClassDefinition();
 
-                continue;
-            }
+			$classId = $mapping[$key];
 
-            $class = new ClassDefinition();
+			$class->setName($key);
+			$class->setId($classId);
 
-            $classId = $mapping[$key];
+			$data = file_get_contents($path);
+			$success = Service::importClassDefinitionFromJson($class, $data, false, true);
 
-            $class->setName($key);
-            $class->setId($classId);
+			if (!$success) {
+				throw new InstallationException(sprintf(
+					'Failed to create class "%s"',
+					$key
+				));
+			}
+		}
+	}
 
-            $this->output->write(sprintf('#### <info>Class "%s" PATH.</info> ####', $path));
-            $this->output->write(sprintf('#### <info>Class NAME "%s" .</info> ####', $key));
-            $this->output->write(sprintf('#### <info>Class ID "%s" .</info> ####', $classId));
+	private function installFieldCollections(): void
+	{
+		$fieldCollections = $this->findInstallFiles(
+			$this->installSourcesPath . '/fieldcollection_sources',
+			'/^fieldcollection_(.*)_export\.json$/'
+		);
 
-            $data = file_get_contents($path);
-            $success = Service::importClassDefinitionFromJson($class, $data, false, true);
+		foreach ($fieldCollections as $key => $path) {
+			if ($fieldCollection = Fieldcollection\Definition::getByKey($key)) {
+				$this->output->write(sprintf(
+					'     <comment>WARNING:</comment> Skipping field collection "%s" as it already exists',
+					$key
+				));
 
-            if (!$success) {
-                throw new InstallationException(sprintf(
-                    'Failed to create class "%s"',
-                    $key
-                ));
-            }
+				continue;
+			}
 
-            //DEBUGING
-            if ($success) {
-                $this->output->write(sprintf(
-                    '     <info>Class "%s" installed successfully.</info>',
-                    $key
-                ));
-            } else {
-                $this->output->write(sprintf(
-                    '     <error>Error installing class "%s".</error>',
-                    $key
-                ));
-            }
+			$fieldCollection = new Fieldcollection\Definition();
+			$fieldCollection->setKey($key);
 
-        }
-    }
+			$data = file_get_contents($path);
+			$success = Service::importFieldCollectionFromJson($fieldCollection, $data);
 
-    private function installFieldCollections(): void
-    {
-        $fieldCollections = $this->findInstallFiles(
-            $this->installSourcesPath . '/fieldcollection_sources',
-            '/^fieldcollection_(.*)_export\.json$/'
-        );
+			if (!$success) {
+				throw new InstallationException(sprintf(
+					'Failed to create field collection "%s"',
+					$key
+				));
+			}
+		}
+	}
 
-        foreach ($fieldCollections as $key => $path) {
-            if ($fieldCollection = Fieldcollection\Definition::getByKey($key)) {
-                $this->output->write(sprintf(
-                    '     <comment>WARNING:</comment> Skipping field collection "%s" as it already exists',
-                    $key
-                ));
+	/**
+	 * Finds objectbrick/fieldcollection sources by path returns a result list
+	 * indexed by element name.
+	 */
+	private function findInstallFiles(string $directory, string $pattern): array
+	{
+		$finder = new Finder();
+		$finder
+			->files()
+			->in($directory)
+			->name($pattern);
 
-                continue;
-            }
+		$results = [];
+		foreach ($finder as $file) {
+			if (preg_match($pattern, $file->getFilename(), $matches)) {
+				$key = $matches[1];
+				$results[$key] = $file->getRealPath();
+			}
+		}
 
-            $fieldCollection = new Fieldcollection\Definition();
-            $fieldCollection->setKey($key);
+		return $results;
+	}
 
-            $data = file_get_contents($path);
-            $success = Service::importFieldCollectionFromJson($fieldCollection, $data);
-
-            if (!$success) {
-                throw new InstallationException(sprintf(
-                    'Failed to create field collection "%s"',
-                    $key
-                ));
-            }
-
-            $this->output->write(sprintf('#### <info>field collection "%s" PATH.</info> ####', $path));
-
-            //DEBUGING
-            if ($success) {
-                $this->output->write(sprintf(
-                    '     <info>field collection "%s" installed successfully.</info>',
-                    $key
-                ));
-            } else {
-                $this->output->write(sprintf(
-                    '     <error>field collection installing class "%s".</error>',
-                    $key
-                ));
-            }
-
-        }
-    }
-
-    /**
-     * Finds objectbrick/fieldcollection sources by path returns a result list
-     * indexed by element name.
-     */
-    private function findInstallFiles(string $directory, string $pattern): array
-    {
-        $finder = new Finder();
-        $finder
-            ->files()
-            ->in($directory)
-            ->name($pattern);
-
-        $results = [];
-        foreach ($finder as $file) {
-            if (preg_match($pattern, $file->getFilename(), $matches)) {
-                $key = $matches[1];
-                $results[$key] = $file->getRealPath();
-            }
-        }
-
-        return $results;
-    }
-
-    public function needsReloadAfterInstall(): bool
-    {
-        return true;
-    }
+	public function needsReloadAfterInstall(): bool
+	{
+		return true;
+	}
 
 }
