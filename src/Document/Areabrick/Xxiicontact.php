@@ -28,6 +28,11 @@ class Xxiicontact extends AbstractTemplateAreabrick
 		return 'Formular';
 	}
 
+	public function getTemplate(): ?string
+	{
+		return '@XxiiForm/areas/xxiicontact/view.html.twig';
+	}
+
 	public function action(Info $info): ?Response
 	{
 		$formId = $this->getDocumentEditable($info->getDocument(), 'relation', 'formId')->getElement();
