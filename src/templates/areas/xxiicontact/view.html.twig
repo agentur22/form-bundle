@@ -1,5 +1,5 @@
 {% if editmode %}
-    {#<div class="brick grid-container">
+    <div class="brick grid-container">
         <div class="grid-x">
             <div class="cell">
                 {{ pimcore_relation('formId', {
@@ -7,15 +7,15 @@
                     'subtypes': {
                         'object': ['object']
                     },
-                    'classes': ['form']
+                    'classes': ['XxiiForm']
                 }) }}
             </div>
         </div>
-    </div>#}
-    <h1>XXII FORM EDITMODE</h1>
+    </div>
 {% else %}
-    <h1>XXII FORM </h1>
-    {#{% if not pimcore_relation('formId').isEmpty() %}
+    <h1>1</h1>
+    {% if not pimcore_relation('formId').isEmpty() %}
+        <h1>2</h1>
         {% set formId = pimcore_relation('formId').getElement().getId() %}
 
         <div class="grid-container">
@@ -42,7 +42,7 @@
 
                 <div class="grid-x">
                     <div class="cell">
-                        {% form_theme form 'form-layout.html.twig' %}
+                        {% form_theme form '@XxiiForm/form-layout.html.twig' %}
                         {{ form_start(form, {'method': 'POST', 'action': '', 'attr': {'class': formCLass}}) }}
                         <input type="hidden" name="formId" value="{{ formId }}">
 
@@ -76,5 +76,5 @@
             {% endif %}
         </div>
 
-    {% endif %}#}
+    {% endif %}
 {% endif %}

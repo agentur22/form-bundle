@@ -1,0 +1,4 @@
+pimcore:
+    bundles:
+        search_paths:
+            - bundles/Xxii/FormBundle

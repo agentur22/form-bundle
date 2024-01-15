@@ -71,8 +71,8 @@
  {% block checkbox_row %}
      {% set row_attr = row_attr|merge({class: ('checkbox ' ~ row_attr.class|default(''))|trim}) %}
      <label {% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}">
-        {{ block('checkbox_widget') }}
-         <span class="label">
+     {{ block('checkbox_widget') }}
+     <span class="label">
              {{ label }}
          </span>
      </label>

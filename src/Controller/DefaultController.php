@@ -12,8 +12,8 @@ class DefaultController extends FrontendController
     /**
      * @Route("/xxii_form")
      */
-    public function indexAction(Request $request): Response
+   /* public function indexAction(Request $request): Response
     {
         return new Response('Hello world from xxii_form');
-    }
+    }*/
 }

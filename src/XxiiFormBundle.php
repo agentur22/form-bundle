@@ -29,5 +29,20 @@ class XxiiFormBundle extends AbstractPimcoreBundle implements PimcoreBundleAdmin
         return 'agentur22/form-bundle';
     }
 
+	public function getJsPaths(): array
+	{
+		return [
+			'/bundles/xxiiform/js/pimcore/startup.js'
+		];
+	}
+
+	public function getCssPaths(): array
+	{
+		return [
+			'/bundles/xxiiform/css/pimcore/form.css'
+		];
+	}
+
+
 
 }

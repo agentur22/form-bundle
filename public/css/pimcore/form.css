@@ -1,0 +1,682 @@
+.title {
+    margin-bottom: 24px;
+}
+form .field,
+form .checkbox,
+form .captcha,
+form .headline {
+    background-color: inherit;
+    position: relative;
+    display: block;
+    margin-bottom: 24px;
+}
+@media only screen and (min-width: 500px) {
+    form .field,
+    form .checkbox,
+    form .captcha,
+    form .headline {
+        margin-bottom: 32px;
+    }
+}
+@media only screen and (min-width: 1024px) {
+    form .field,
+    form .checkbox,
+    form .captcha,
+    form .headline {
+        margin-bottom: 48px;
+    }
+}
+form label.field,
+form label.captcha {
+    cursor: pointer;
+}
+form label.field.error input[type="text"],
+form label.captcha.error input[type="text"],
+form label.field.error input[type="email"],
+form label.captcha.error input[type="email"],
+form label.field.error textarea,
+form label.captcha.error textarea,
+form label.field.error select,
+form label.captcha.error select {
+    border-color: #FB2424;
+}
+form label.field.error input[type="text"]:hover,
+form label.captcha.error input[type="text"]:hover,
+form label.field.error input[type="email"]:hover,
+form label.captcha.error input[type="email"]:hover,
+form label.field.error textarea:hover,
+form label.captcha.error textarea:hover,
+form label.field.error select:hover,
+form label.captcha.error select:hover {
+    border-color: #FB2424;
+}
+form label.field.error span.label,
+form label.captcha.error span.label {
+    color: #FB2424;
+}
+form label.field input[type="text"],
+form label.captcha input[type="text"],
+form label.field input[type="email"],
+form label.captcha input[type="email"],
+form label.field textarea,
+form label.captcha textarea,
+form label.field select,
+form label.captcha select {
+    width: 100%;
+    padding: 17px 14px;
+    border: 1px solid #676A73;
+    border-radius: 8px;
+    font: 400 16px / 23px "Azo Sans";
+    color: #ffffff;
+    background-color: inherit;
+    transition: border-color 0.3s;
+}
+@media only screen and (max-width: 500px) {
+    form label.field input[type="text"],
+    form label.captcha input[type="text"],
+    form label.field input[type="email"],
+    form label.captcha input[type="email"],
+    form label.field textarea,
+    form label.captcha textarea,
+    form label.field select,
+    form label.captcha select {
+        padding: 9px 14px;
+    }
+}
+form label.field input[type="text"]:hover,
+form label.captcha input[type="text"]:hover,
+form label.field input[type="email"]:hover,
+form label.captcha input[type="email"]:hover,
+form label.field textarea:hover,
+form label.captcha textarea:hover,
+form label.field select:hover,
+form label.captcha select:hover {
+    border-color: #F1582A;
+}
+form label.field input[type="text"]:hover::placeholder,
+form label.captcha input[type="text"]:hover::placeholder,
+form label.field input[type="email"]:hover::placeholder,
+form label.captcha input[type="email"]:hover::placeholder,
+form label.field textarea:hover::placeholder,
+form label.captcha textarea:hover::placeholder,
+form label.field select:hover::placeholder,
+form label.captcha select:hover::placeholder {
+    opacity: 1;
+}
+form label.field input[type="text"]::placeholder,
+form label.captcha input[type="text"]::placeholder,
+form label.field input[type="email"]::placeholder,
+form label.captcha input[type="email"]::placeholder,
+form label.field textarea::placeholder,
+form label.captcha textarea::placeholder,
+form label.field select::placeholder,
+form label.captcha select::placeholder {
+    opacity: 0;
+}
+form label.field input[type="text"]:hover + span.label,
+form label.captcha input[type="text"]:hover + span.label,
+form label.field input[type="email"]:hover + span.label,
+form label.captcha input[type="email"]:hover + span.label,
+form label.field textarea:hover + span.label,
+form label.captcha textarea:hover + span.label,
+form label.field select:hover + span.label,
+form label.captcha select:hover + span.label,
+form label.field input[type="text"] + span.label:hover,
+form label.captcha input[type="text"] + span.label:hover,
+form label.field input[type="email"] + span.label:hover,
+form label.captcha input[type="email"] + span.label:hover,
+form label.field textarea + span.label:hover,
+form label.captcha textarea + span.label:hover,
+form label.field select + span.label:hover,
+form label.captcha select + span.label:hover {
+    top: 0;
+    font: 400 12px / 12px "Azo Sans";
+    background-color: #161B24;
+}
+form label.field input[type="text"]:focus-visible,
+form label.captcha input[type="text"]:focus-visible,
+form label.field input[type="email"]:focus-visible,
+form label.captcha input[type="email"]:focus-visible,
+form label.field textarea:focus-visible,
+form label.captcha textarea:focus-visible,
+form label.field select:focus-visible,
+form label.captcha select:focus-visible {
+    outline: none;
+    top: 0;
+    background-color: #161B24;
+    border-width: 2px;
+}
+form label.field input[type="text"]:focus-visible + span.label,
+form label.captcha input[type="text"]:focus-visible + span.label,
+form label.field input[type="email"]:focus-visible + span.label,
+form label.captcha input[type="email"]:focus-visible + span.label,
+form label.field textarea:focus-visible + span.label,
+form label.captcha textarea:focus-visible + span.label,
+form label.field select:focus-visible + span.label,
+form label.captcha select:focus-visible + span.label {
+    top: 0;
+    font: 400 12px / 12px "Azo Sans" !important;
+}
+form label.field span.label,
+form label.captcha span.label {
+    position: absolute;
+    color: #ffffff;
+    background-color: inherit;
+    padding: 4px 4px;
+    left: 8px;
+    font: 400 16px / 23px "Azo Sans";
+    transform: translateY(-50%);
+    transition: all 0.1s ease-in-out;
+    z-index: 10;
+}
+form label.field span.label.top,
+form label.captcha span.label.top {
+    top: 0 !important;
+    font: 400 12px / 12px "Azo Sans";
+}
+form label.field input[required="required"] + .label:after,
+form label.captcha input[required="required"] + .label:after {
+    content: "*";
+}
+form label.field textarea[required="required"] + .label:after,
+form label.captcha textarea[required="required"] + .label:after {
+    content: "*";
+}
+form label.field input[type="email"] + span.label,
+form label.captcha input[type="email"] + span.label,
+form label.field input[type="text"] + span.label,
+form label.captcha input[type="text"] + span.label,
+form label.field select + span.label,
+form label.captcha select + span.label {
+    top: 50%;
+}
+form label.field textarea + span.label,
+form label.captcha textarea + span.label {
+    top: 26px;
+}
+form label.field textarea,
+form label.captcha textarea {
+    height: 120px;
+}
+form label.field select,
+form label.captcha select {
+    appearance: none;
+    background: url("../svg/select-down.svg") right 24px center no-repeat;
+}
+form label.field.disabled,
+form label.captcha.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+form label.field.headline span.label,
+form label.captcha.headline span.label {
+    position: inherit;
+}
+form label.captcha {
+    position: relative;
+    padding-left: 200px;
+}
+form label.captcha .img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: 8px 0 0 8px;
+    overflow: hidden;
+}
+form label.captcha .img img {
+    display: block;
+}
+form label.captcha span.label {
+    left: 228px;
+}
+input[type="radio"] {
+    position: relative;
+    margin-right: 16px;
+    opacity: 0;
+}
+input[type="radio"] + span.label {
+    font: 400 20px / 30px "Azo Sans";
+}
+input[type="radio"] + span.label::before,
+input[type="radio"] + span.label::after {
+    content: "";
+    box-sizing: border-box;
+    position: absolute;
+    display: block;
+    border-radius: 100%;
+}
+input[type="radio"] + span.label::before {
+    left: 0;
+    top: 4px;
+    width: 24px;
+    height: 24px;
+    border: 2px solid #676A73;
+    transition: border-color 0.3s;
+}
+input[type="radio"] + span.label::after {
+    left: 7px;
+    top: 11px;
+    width: 10px;
+    height: 10px;
+    background-color: transparent;
+}
+input[type="radio"]:hover:not(checked) + span.label::before {
+    border-color: #F1582A;
+}
+input[type="radio"]:checked:hover + span.label::after {
+    background-color: #F1582A;
+}
+input[type="radio"]:checked:focus-visible + span.label::before {
+    box-shadow: inset 0 0 0 2px #676A73;
+}
+input[type="radio"]:checked:focus-visible + span.label::after {
+    background-color: transparent;
+}
+input[type="radio"]:checked + span.label::after {
+    background-color: #676A73;
+}
+input[type="radio"]:focus-visible + span.label::before {
+    border-color: #F1582A;
+}
+input[type="radio"].disabled input[type="radio"] + span.label::before {
+    background-color: #676A73;
+}
+input[type="radio"].disabled input[type="radio"] + span.label::after {
+    background-color: #676A73;
+}
+input[type="radio"].disabled input[type="radio"]:hover:not(checked) + span.label::before {
+    border-color: #676A73 !important;
+}
+input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+    opacity: 0;
+}
+input[type="checkbox"] + label,
+input[type="checkbox"] + .label {
+    padding-left: 24px;
+}
+input[type="checkbox"] + label::before,
+input[type="checkbox"] + .label::before {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 2px;
+    top: 4px;
+    height: 24px;
+    width: 24px;
+    border: 2px solid #676A73;
+    border-radius: 4px;
+    transition: border-color 0.3s;
+}
+input[type="checkbox"] + label::after,
+input[type="checkbox"] + .label::after {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 9px;
+    top: 12px;
+    transform: rotate(-45deg);
+    width: 12px;
+    height: 6px;
+    background-color: transparent;
+    border-left: 2px solid transparent;
+    border-bottom: 2px solid transparent;
+}
+input[type="checkbox"] + label:hover::before,
+input[type="checkbox"] + .label:hover::before {
+    border-color: #F1582A;
+}
+input[type="checkbox"]:focus-visible + label::before,
+input[type="checkbox"]:focus-visible + .label::before {
+    border-color: #F1582A;
+    box-shadow: inset 0 0 0 1px #676A73;
+}
+input[type="checkbox"]:checked ~ label::before,
+input[type="checkbox"]:checked ~ .label::before {
+    background-color: #F1582A;
+    border-color: #F1582A;
+}
+input[type="checkbox"]:checked ~ label::after,
+input[type="checkbox"]:checked ~ .label::after {
+    border-color: #ffffff;
+}
+input[type="checkbox"]:disabled ~ label::before,
+input[type="checkbox"]:disabled ~ .label::before {
+    background-color: #676A73;
+    border-color: #676A73;
+}
+input[type="checkbox"]:disabled ~ label::after,
+input[type="checkbox"]:disabled ~ .label::after {
+    border-color: #676A73;
+}
+select {
+    width: 100%;
+    padding: 17px 14px;
+    border: 1px solid #676A73;
+    border-radius: 8px;
+    font: 400 16px / 23px "Azo Sans";
+    color: #ffffff;
+    background-color: inherit;
+    appearance: none;
+    background: url("../svg/select-down.svg") right 24px center no-repeat;
+}
+@media only screen and (max-width: 500px) {
+    select {
+        padding: 9px 14px;
+    }
+}
+select:hover {
+    border-color: #F1582A;
+}
+select:hover + span.label,
+select + span.label:hover {
+    top: 0;
+    font: 400 12px / 12px "Azo Sans";
+}
+select:focus-visible {
+    outline: none;
+    top: 0;
+    background-color: inherit;
+    border-width: 2px;
+}
+select:focus-visible + span.label {
+    top: 0;
+    font: 400 12px / 12px "Azo Sans" !important;
+}
+select option {
+    width: 100%;
+    padding: 18px 20px;
+    height: 62px;
+    background-color: #161B24;
+}
+.data-protection {
+    font: 300 12px / 130% "Azo Sans";
+}
+.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
+div.field span.label span.label:first-child {
+    display: block;
+    margin-bottom: 16px;
+}
+div.field span.label .box label {
+    display: block;
+    position: relative;
+    cursor: pointer;
+}
+@media only screen and (min-width: 500px) {
+    div.field span.label .box label {
+        display: inline-block;
+    }
+}
+div.field span.label .box label + label {
+    margin-left: 0;
+}
+@media only screen and (min-width: 500px) {
+    div.field span.label .box label + label {
+        margin-left: 64px;
+    }
+}
+div.field span.label .box label input[type="checkbox"] + label {
+    padding-left: 48px;
+}
+@media only screen and (min-width: 500px) {
+    div.field span.label .box label input[type="checkbox"] + label {
+        margin-left: -24px;
+    }
+}
+.headline {
+    font: 300 20px / 17px "Azo Sans";
+}
+@media only screen and (min-width: 500px) {
+    .headline {
+        font: 300 20px / 24px "Azo Sans";
+    }
+}
+@media only screen and (min-width: 1024px) {
+    .headline {
+        font: 300 32px / 38px "Azo Sans";
+    }
+}
+/*################*/
+/* Button */
+.button,
+button {
+    position: relative;
+    text-decoration: none;
+    display: inline-block;
+    padding: 11px 16px;
+    border: none;
+    color: #953C25;
+    background: none;
+    border-radius: 70px;
+    cursor: pointer;
+    min-width: 32px;
+    height: 32px;
+    max-width: 600px;
+    z-index: 10;
+}
+@media only screen and (min-width: 500px) {
+    .button,
+    button {
+        min-width: 48px;
+        height: 48px;
+    }
+}
+@media only screen and (min-width: 1024px) {
+    .button,
+    button {
+        min-width: 56px;
+        height: 56px;
+    }
+}
+.button.cta-arrow,
+button.cta-arrow {
+    transition: max-width 0.5s cubic-bezier(0.47, 1.64, 0.41, 0.8);
+}
+.button.cta-arrow span:not(.sub),
+button.cta-arrow span:not(.sub) {
+    display: none;
+}
+.button.cta-arrow span.sub,
+button.cta-arrow span.sub {
+    margin-top: 0;
+    max-width: 0;
+    width: auto;
+    transition: max-width 4.5s cubic-bezier(0.47, 1.64, 0.41, 0.8);
+}
+@media only screen and (min-width: 1024px) {
+    .button.cta-arrow span.sub,
+    button.cta-arrow span.sub {
+        margin-top: 3px;
+    }
+}
+.button.cta-arrow:hover span.sub,
+button.cta-arrow:hover span.sub {
+    width: auto;
+    max-width: 600px;
+}
+.button:before,
+button:before {
+    content: "";
+    background: url(../svg/arrow-right.svg) no-repeat center;
+    width: 32px;
+    height: 32px;
+    background-size: 13px 9px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    transition: opacity 0.4s;
+}
+.button:after,
+button:after {
+    height: 32px;
+    width: 32px;
+    content: "";
+    background: #F1582A;
+    border-radius: 38px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    transition: width 0.5s cubic-bezier(0.47, 1.64, 0.41, 0.8);
+    z-index: -1;
+}
+@media only screen and (min-width: 500px) {
+    .button,
+    button {
+        font: 500 20px / 26px "Azo Sans";
+        border-radius: 60px;
+    }
+    .button:before,
+    button:before {
+        width: 48px;
+        height: 48px;
+        background-size: 20px 14px;
+    }
+    .button:after,
+    button:after {
+        height: 48px;
+        width: 48px;
+    }
+}
+@media only screen and (min-width: 1024px) {
+    .button,
+    button {
+        font: 500 24px / 30px "Azo Sans";
+        border-radius: 70px;
+    }
+    .button:before,
+    button:before {
+        width: 56px;
+        height: 56px;
+        background-size: 24px 17px;
+    }
+    .button:after,
+    button:after {
+        height: 56px;
+        width: 56px;
+    }
+}
+.button:hover,
+button:hover {
+    font-weight: 400;
+    color: #ffffff;
+    padding: 11px 16px;
+}
+.button:hover:after,
+button:hover:after {
+    width: 100%;
+}
+.button:hover span,
+button:hover span {
+    opacity: 0;
+    left: 120px;
+    transition: opacity 0.4s, left 0.5s cubic-bezier(0.47, 1.64, 0.41, 0.8);
+}
+.button:hover span.sub,
+button:hover span.sub {
+    opacity: 1;
+    width: auto;
+    margin-left: 0;
+    transition: opacity 0.1s, margin-left 0.4s cubic-bezier(0.47, 1.64, 0.41, 0.8);
+}
+.button:hover:before,
+button:hover:before {
+    opacity: 0;
+}
+.button span,
+button span {
+    display: block;
+    position: relative;
+    left: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    font: 500 14px / 12px "Azo Sans";
+    height: 10px;
+    color: #953C25;
+    transition: opacity 0.1s, left 0.4s cubic-bezier(0.47, 1.64, 0.41, 0.8);
+}
+@media only screen and (min-width: 500px) {
+    .button span,
+    button span {
+        left: 48px;
+        font: 500 20px / 26px "Azo Sans";
+        height: 5px;
+        margin-top: -10px;
+    }
+}
+@media only screen and (min-width: 1024px) {
+    .button span,
+    button span {
+        left: 56px;
+        font: 500 24px / 30px "Azo Sans";
+        height: 0;
+        margin-top: -12px;
+    }
+}
+.button span.sub,
+button span.sub {
+    font-weight: 400;
+    position: static;
+    opacity: 0;
+    transform: none;
+    width: 0;
+    color: #ffffff;
+    margin-left: 12px;
+    margin-top: -9px;
+    white-space: nowrap;
+    transition: opacity 0.1s, margin-left 0.4s cubic-bezier(0.47, 1.64, 0.41, 0.8);
+}
+@media only screen and (min-width: 500px) {
+    .button span.sub,
+    button span.sub {
+        margin-top: 7px;
+    }
+}
+@media only screen and (min-width: 1024px) {
+    .button span.sub,
+    button span.sub {
+        margin-top: 16px;
+    }
+}
+button {
+    display: inline-block;
+}
+button span {
+    top: 0 !important;
+    transform: none !important;
+}
+@media only screen and (min-width: 500px) {
+    button span {
+        margin-top: -13px !important;
+    }
+}
+button span.sub {
+    margin-top: -9px !important;
+    transform: none !important;
+}
+@media only screen and (min-width: 500px) {
+    button span.sub {
+        margin-top: -5px !important;
+    }
+}
+@media only screen and (min-width: 1024px) {
+    button span.sub {
+        margin-top: 0px !important;
+    }
+}
+button.cta-arrow span.sub {
+    margin-top: 0 !important;
+}
+@media only screen and (min-width: 500px) {
+    button.cta-arrow span.sub {
+        margin-top: -12px !important;
+    }
+}
+@media only screen and (min-width: 1024px) {
+    button.cta-arrow span.sub {
+        margin-top: -12px !important;
+    }
+}
