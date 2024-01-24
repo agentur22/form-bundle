@@ -13,9 +13,7 @@
         </div>
     </div>
 {% else %}
-    <h1>1</h1>
     {% if not pimcore_relation('formId').isEmpty() %}
-        <h1>2</h1>
         {% set formId = pimcore_relation('formId').getElement().getId() %}
 
         <div class="grid-container">
@@ -52,7 +50,12 @@
                             {% endif %}
                         {% endfor %}
 
-                        <label class="captcha cell field">
+
+                        {% if formData.error.captcha is defined %}
+                            {% set captchaError = 'error'  %}
+                        {% endif %}
+
+                        <label class="captcha cell field {{ captchaError|default('') }}">
                             <span class="img">
                                 {% if formData.captchaView is defined %}
                                     <img src="data:image/png;base64,{{ formData.captchaView }}"/>
@@ -63,6 +66,14 @@
                                 Captcha
                             </span>
                         </label>
+
+                        {% if captchaError is defined %}
+                            <label class="captcha cell field">
+                                <div class="captcha-error">
+                                    {{ formData.error.captcha }}
+                                </div>
+                            </label>
+                        {% endif %}
 
                         {% for field in form.children %}
                             {% if field.vars.row_attr.button  is defined %}

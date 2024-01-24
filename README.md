@@ -16,3 +16,6 @@ return [
 ```
 
 - Execute: `$ bin/console pimcore:bundle:install XxiiFormBundle`
+
+
+- Include: `xxiicontact` in Areablock, where you want to allow Contact Brick
