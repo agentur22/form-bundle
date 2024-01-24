@@ -37,15 +37,20 @@ class Xxiicontact extends AbstractTemplateAreabrick
 	{
 		$formId = $this->getDocumentEditable($info->getDocument(), 'relation', 'formId')->getElement();
 
-		$info->setParam('formId', DataObject\XxiiForm::getByPath($formId));
-
 		if (!$formId) {
 			$formId = 0;
+		} else {
+			$info->setParam('formId', DataObject\XxiiForm::getByPath($formId));
 		}
 
 		$form = $this->buildForm($info->getRequest(), $formId);
 
-		if ($form['formData']['success'] && $form['formData']['thxPage']) {
+		if (is_string($form)) {
+			$info->setParam('error', $form);
+			return null;
+		}
+
+		if ($form['formData']['success'] == true && $form['formData']['thxPage']) {
 			return new RedirectResponse($form['formData']['thxPage']);
 		}
 
@@ -73,7 +78,7 @@ class Xxiicontact extends AbstractTemplateAreabrick
 			return 'no_id';
 		}
 
-		$formObject = DataObject\Form::getByPath($formId);
+		$formObject = DataObject\XxiiForm::getByPath($formId);
 
 		if (!$formObject) {
 			return 'no_object for id:' . $formId;
@@ -291,10 +296,12 @@ class Xxiicontact extends AbstractTemplateAreabrick
 					$formData['success'] = true;
 				} else {
 					$session->set('capcha_code', $randStrng);
+					$formData['success'] = false;
 					$formData['captchaView'] = $this->b64img($randStrng, 4, 213, 59);
 					$formData['error']['captcha'] = 'Captcha ungülitg';
 				}
 			} else {
+				$formData['success'] = false;
 				$session->set('capcha_code', $randStrng);
 				$formData['captchaView'] = $this->b64img($randStrng, 4, 213, 59);
 				$formData['error']['captcha'] = 'Captcha ungülitg';
