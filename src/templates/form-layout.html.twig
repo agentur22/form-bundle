@@ -62,10 +62,7 @@
 {% block submit_widget %}
     {% set type = type|default('submit') %}
     {% set attr = attr|merge({class: (attr.class|default('') ~ ' button')|trim}) %}
-    {# {{ block('button_widget') }} #}
-    {# TODO HArdcod Remove #}
-    <button type="submit" id="form_Absenden" name="form[Absenden]" class="button"><span>Absenden</span>
-    </button>
+     {{ block('button_widget') }}
 {% endblock submit_widget %}
 
  {% block checkbox_row %}
@@ -73,7 +70,7 @@
      <label {% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}">
      {{ block('checkbox_widget') }}
      <span class="label">
-             {{ label }}
+             {{ label|trans|raw }}
          </span>
      </label>
  {% endblock checkbox_row %}
@@ -82,7 +79,7 @@
      <label class="radio">
          {{ form_widget(form) }}
          <span class="label">
-             {{ label }}
+             {{ label|trans|raw }}
          </span>
      </label>
  {% endblock radio_row %}
@@ -111,6 +108,6 @@
 
 {% block checkbox_radio_label %}
     <span class="label">
-        {{ label }}
+        {{ label|trans|raw }}
     </span>
 {% endblock checkbox_radio_label %}

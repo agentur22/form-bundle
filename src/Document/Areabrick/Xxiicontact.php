@@ -180,8 +180,7 @@ class Xxiicontact extends AbstractTemplateAreabrick
 					$formBuild->add($name, SubmitType::class, [
 						'label' => $label,
 						'row_attr' => [
-							'class' => $class,
-							'button' => true
+							'class' => $class
 						]
 					]);
 				} elseif (in_array($type, ['choiceradio', 'choicecheckbox', 'select'])) {
@@ -198,6 +197,7 @@ class Xxiicontact extends AbstractTemplateAreabrick
 
 					$formBuild->add($name, ChoiceType::class, [
 						'label' => $label,
+						'label_html' => true,
 						'choices' => $choices,
 						'expanded' => $expandet,
 						'multiple' => $multiple,
@@ -209,6 +209,7 @@ class Xxiicontact extends AbstractTemplateAreabrick
 				} elseif ($type == 'checkbox') {
 					$formBuild->add($name, CheckboxType::class, [
 						'label' => $label,
+						'label_html' => true,
 						'required' => $required,
 						'row_attr' => [
 							'class' => $class
