@@ -41,11 +41,11 @@
                 <div class="grid-x">
                     <div class="cell">
                         {% form_theme form '@XxiiForm/form-layout.html.twig' %}
-                        {{ form_start(form, {'method': 'POST', 'action': '', 'attr': {'class': formCLass}}) }}
+                        {{ form_start(form, {'method': 'POST', 'action': '', 'attr': {'class': formClass}}) }}
                         <input type="hidden" name="formId" value="{{ formId }}">
 
                         {% for field in form.children %}
-                            {% if field.vars.name != 'captcha' and not field.vars.row_attr.button is defined %}
+                            {% if field.vars.name != 'captcha' and not field.vars.row_attr.data is defined %}
                                 {{ form_row(field) }}
                             {% endif %}
                         {% endfor %}
@@ -76,7 +76,7 @@
                         {% endif %}
 
                         {% for field in form.children %}
-                            {% if field.vars.row_attr.button  is defined %}
+                            {% if field.vars.row_attr.data  is defined and field.vars.row_attr.data == 'button' %}
                                 {{ form_row(field) }}
                             {% endif %}
                         {% endfor %}
