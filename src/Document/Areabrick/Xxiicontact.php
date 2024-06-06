@@ -9,12 +9,19 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationExtension;
+
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\String\Slugger\SluggerInterface;
+
 use Symfony\Component\Form\Forms;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,295 +30,335 @@ use \Pimcore\Model\DataObject;
 
 class Xxiicontact extends AbstractTemplateAreabrick
 {
-	public function getName(): string
-	{
-		return 'Formular';
-	}
+    public function getName(): string
+    {
+        return 'Formular';
+    }
 
-	public function getTemplate(): ?string
-	{
-		return '@XxiiForm/areas/xxiicontact/view.html.twig';
-	}
+    public function getTemplate(): ?string
+    {
+        return '@XxiiForm/areas/xxiicontact/view.html.twig';
+    }
 
-	public function action(Info $info): ?Response
-	{
-		$formId = $this->getDocumentEditable($info->getDocument(), 'relation', 'formId')->getElement();
+    public function action(Info $info): ?Response
+    {
+        $formId = $this->getDocumentEditable($info->getDocument(), 'relation', 'formId')->getElement();
 
-		if (!$formId) {
-			$formId = 0;
-		} else {
-			$info->setParam('formId', DataObject\XxiiForm::getByPath($formId));
-		}
+        if (!$formId) {
+            $formId = 0;
+        } else {
+            $info->setParam('formId', DataObject\XxiiForm::getByPath($formId));
+        }
 
-		$form = $this->buildForm($info->getRequest(), $formId);
+        $form = $this->buildForm($info->getRequest(), $formId);
 
-		if (is_string($form)) {
-			$info->setParam('error', $form);
-			return null;
-		}
+        if (is_string($form)) {
+            $info->setParam('error', $form);
+            return null;
+        }
 
-		if ($form['formData']['success'] == true && $form['formData']['thxPage']) {
-			return new RedirectResponse($form['formData']['thxPage']);
-		}
+        if ($form['formData']['success'] == true && $form['formData']['thxPage']) {
+            return new RedirectResponse($form['formData']['thxPage']);
+        }
 
-		$info->setParam('error', '');
-		$info->setParam('formTitle', '');
-		$info->setParam('formCLass', '');
-		$info->setParam('errors', $form['form']->getErrors());
+        $info->setParam('error', '');
+        $info->setParam('formTitle', '');
+        $info->setParam('formClass', $form['formClass']);
+        $info->setParam('errors', $form['form']->getErrors());
 
-		$info->setParam('formData', $form['formData']);
-		$info->setParam('form', $form['form']->createView());
+        $info->setParam('formData', $form['formData']);
+        $info->setParam('form', $form['form']->createView());
 
-		return null;
-	}
+        return null;
+    }
 
-	protected function buildForm($request, $formId)
-	{
+    protected function buildForm($request, $formId)
+    {
 
-		$session = $request->getSession();
-		$randStrng = substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(6 / strlen($x)))), 1, 6);
+        $session = $request->getSession();
+        $randStrng = substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(6 / strlen($x)))), 1, 6);
 
-		$formData = ['success' => false];
-		$error = '';
+        $formData = ['success' => false];
+        $error = '';
 
-		if (!$formId) {
-			return 'no_id';
-		}
+        if (!$formId) {
+            return 'no_id';
+        }
 
-		$formObject = DataObject\XxiiForm::getByPath($formId);
+        $formObject = DataObject\XxiiForm::getByPath($formId);
 
-		if (!$formObject) {
-			return 'no_object for id:' . $formId;
-		}
+        if (!$formObject) {
+            return 'no_object for id:' . $formId;
+        }
 
-		$formEntryFolder = $formObject->getFormData() ? $formObject->getFormData()->getId() : $formObject->getId();
-		$formEmailTmpl = $formObject->getEmailTmplt() ? $formObject->getEmailTmplt() : '/shared/form/default';
-		$thxPage = $formObject->getThxPage() ? $formObject->getThxPage() : '/';
+        $formEntryFolder = $formObject->getFormData() ? $formObject->getFormData()->getId() : $formObject->getId();
+        $formEmailTmpl = $formObject->getEmailTmplt() ? $formObject->getEmailTmplt() : '/shared/form/default';
+        $thxPage = $formObject->getThxPage() ? $formObject->getThxPage() : '/';
+        $relationsFolder = $formObject->getRelationsFolder() ? $formObject->getRelationsFolder() : \Pimcore\Model\Asset::getByPath('/');
+        $formClass = $formObject->getFormClass() ? $formObject->getFormClass() : '';
 
-		$formFactory = Forms::createFormFactoryBuilder()->addExtension(new HttpFoundationExtension())->getFormFactory();
+        $formFactory = Forms::createFormFactoryBuilder()->addExtension(new HttpFoundationExtension())->getFormFactory();
 
-		$formBuild = $formFactory->createBuilder();
+        $formBuild = $formFactory->createBuilder();
 
-		$formBuild->add('subject', HiddenType::class, [
-			'label' => false,
-			'required' => false,
-		]);
+        $formBuild->add('subject', HiddenType::class, [
+            'label' => false,
+            'required' => false,
+        ]);
 
-		$formBuild->add('formId', HiddenType::class, [
-			'data' => $formId,
-		]);
+        $formBuild->add('formId', HiddenType::class, [
+            'data' => $formId,
+        ]);
 
-		if ($formObject->getFields()) {
-			$fields = $formObject->getFields()->getItems();
+        if ($formObject->getFields()) {
+            $fields = $formObject->getFields()->getItems();
 
-			foreach ($fields as $field) {
+            foreach ($fields as $field) {
 
-				$type = $field->getInputType();
-				$label = $field->getLabel();
-				$placeholder = $field->getPlaceholder();
-				$name = \Pimcore\Model\Element\Service::getValidKey(urlencode($label), 'asset'); //$formObject->getId() . $field->getIndex();
-				$required = ($field->getRequired() == null) ? false : $field->getRequired();
-				$class = $field->getFieldClass();
+                $type = $field->getInputType();
+                $label = $field->getLabel();
+                $placeholder = $field->getPlaceholder();
+                $name = \Pimcore\Model\Element\Service::getValidKey(urlencode($label), 'asset'); //$formObject->getId() . $field->getIndex();
+                $required = ($field->getRequired() == null) ? false : $field->getRequired();
+                $class = $field->getFieldClass();
 
-				if ($type == 'text') {
-					$formBuild->add($name, TextType::class, [
-						'label' => $label,
-						'attr' => [
-							'placeholder' => $placeholder
-						],
-						'required' => $required,
-						'row_attr' => [
-							'class' => $class
-						]
-					]);
-				} elseif ($type == 'email') {
-					$formBuild->add($name, EmailType::class, [
-						'label' => $label,
-						'attr' => [
-							'placeholder' => $placeholder
-						],
-						'required' => $required,
-						'row_attr' => [
-							'class' => $class
-						]
-					]);
-				} elseif ($type == 'date') {
-					$formBuild->add($name, DateType::class, [
-						'label' => $label,
-						'attr' => [
-							'placeholder' => $placeholder,
-							'type' => 'date'
-						],
-						'widget' => 'single_text',
-						'html5' => true,
-						'required' => $required,
-						'row_attr' => [
-							'class' => $class
-						]
-					]);
-				} elseif ($type == 'time') {
-					$formBuild->add($name, TimeType::class, [
-						'label' => $label,
-						'attr' => [
-							'placeholder' => $placeholder,
-							'type' => 'time'
-						],
-						'widget' => 'single_text',
-						'input' => 'datetime',
-						'required' => $required,
-						'row_attr' => [
-							'class' => $class
-						]
-					]);
-				} elseif ($type == 'textarea') {
+                if ($type == 'text') {
+                    $formBuild->add($name, TextType::class, [
+                        'label' => $label,
+                        'attr' => [
+                            'placeholder' => $placeholder
+                        ],
+                        'required' => $required,
+                        'row_attr' => [
+                            'class' => $class
+                        ]
+                    ]);
+                } elseif ($type == 'upload') {
+                    $formBuild->add($name, FileType::class, [
+                        'label' => $label,
+                        'attr' => [
+                            'placeholder' => $placeholder
+                        ],
+                        'required' => $required,
+                        'row_attr' => [
+                            'class' => $class
+                        ],
 
-					$formBuild->add($name, TextareaType::class, [
-						'label' => $label,
-						'attr' => [
-							'placeholder' => $placeholder
-						],
-						'required' => $required,
-						'row_attr' => [
-							'class' => $class
-						]
 
-					]);
-				} elseif ($type == 'button') {
-					$formBuild->add($name, SubmitType::class, [
-						'label' => $label,
-						'row_attr' => [
-							'class' => $class,
-							'button' => true
-						]
-					]);
-				} elseif (in_array($type, ['choiceradio', 'choicecheckbox', 'select'])) {
 
-					$choices = [];
-					$multiple = ($type == 'choiceradio' || $type == 'select' ? false : true);
-					$expandet = ($type == 'select' ? false : true);
+                    ]);
+                } elseif ($type == 'email') {
+                    $formBuild->add($name, EmailType::class, [
+                        'label' => $label,
+                        'attr' => [
+                            'placeholder' => $placeholder
+                        ],
+                        'required' => $required,
+                        'row_attr' => [
+                            'class' => $class
+                        ]
+                    ]);
+                } elseif ($type == 'date') {
+                    $formBuild->add($name, DateType::class, [
+                        'label' => $label,
+                        'attr' => [
+                            'placeholder' => $placeholder,
+                            'type' => 'date'
+                        ],
+                        'widget' => 'single_text',
+                        'html5' => true,
+                        'required' => $required,
+                        'row_attr' => [
+                            'class' => $class
+                        ]
+                    ]);
+                } elseif ($type == 'time') {
+                    $formBuild->add($name, TimeType::class, [
+                        'label' => $label,
+                        'attr' => [
+                            'placeholder' => $placeholder,
+                            'type' => 'time'
+                        ],
+                        'widget' => 'single_text',
+                        'input' => 'datetime',
+                        'required' => $required,
+                        'row_attr' => [
+                            'class' => $class
+                        ]
+                    ]);
+                } elseif ($type == 'textarea') {
 
-					foreach ($field->getChoices() as $choice) {
-						$choiceLabel = $choice['label']->getData();
-						$choiceValue = $choice['choiceValue']->getData();
-						$choices[$choiceLabel] = $choiceValue;
-					}
+                    $formBuild->add($name, TextareaType::class, [
+                        'label' => $label,
+                        'attr' => [
+                            'placeholder' => $placeholder
+                        ],
+                        'required' => $required,
+                        'row_attr' => [
+                            'class' => $class
+                        ]
 
-					$formBuild->add($name, ChoiceType::class, [
-						'label' => $label,
-						'choices' => $choices,
-						'expanded' => $expandet,
-						'multiple' => $multiple,
-						'required' => $required,
-						'row_attr' => [
-							'class' => $class
-						]
-					]);
-				} elseif ($type == 'checkbox') {
-					$formBuild->add($name, CheckboxType::class, [
-						'label' => $label,
-						'required' => $required,
-						'row_attr' => [
-							'class' => $class
-						]
-					]);
-				} elseif ($type == 'headline') {
-					$formBuild->add($name, FormType::class, [
-						'label' => $label,
-						'attr' => [
-							'type' => 'headline'
-						],
-						'row_attr' => [
-							'class' => $class
-						]
-					]);
-				}
+                    ]);
+                } elseif ($type == 'button') {
+                    $formBuild->add($name, SubmitType::class, [
+                        'label' => $label,
+                        'row_attr' => [
+                            'class' => $class,
+                            'data' => 'button'
+                        ]
+                    ]);
+                } elseif (in_array($type, ['choiceradio', 'choicecheckbox', 'select'])) {
 
-				$formBuild->add('captcha', TextType::class, [
-					'label' => 'captcha',
-					'attr' => [
-						'type' => 'captcha'
-					],
-					'row_attr' => [
-						'class' => 'captcha'
-					]
-				]);
-			}
-		}
+                    $choices = [];
+                    $multiple = ($type == 'choiceradio' || $type == 'select' ? false : true);
+                    $expandet = ($type == 'select' ? false : true);
 
-		$form = $formBuild->getForm();
-		$form->handleRequest($request);
+                    foreach ($field->getChoices() as $choice) {
+                        $choiceLabel = $choice['label']->getData();
+                        $choiceValue = $choice['choiceValue']->getData();
+                        $choices[$choiceLabel] = $choiceValue;
+                    }
 
-		if ($form->isSubmitted()) {
+                    $formBuild->add($name, ChoiceType::class, [
+                        'label' => $label,
+                        'label_html' => true,
+                        'choices' => $choices,
+                        'expanded' => $expandet,
+                        'multiple' => $multiple,
+                        'required' => $required,
+                        'row_attr' => [
+                            'class' => $class
+                        ]
+                    ]);
+                } elseif ($type == 'checkbox') {
+                    $formBuild->add($name, CheckboxType::class, [
+                        'label' => $label,
+                        'label_html' => true,
+                        'required' => $required,
+                        'row_attr' => [
+                            'class' => $class
+                        ]
+                    ]);
+                } elseif ($type == 'headline') {
+                    $formBuild->add($name, FormType::class, [
+                        'label' => $label,
+                        'attr' => [
+                            'type' => 'headline'
+                        ],
+                        'row_attr' => [
+                            'class' => $class
+                        ]
+                    ]);
+                }
 
-			$formData = $form->getData();
+                $formBuild->add('captcha', TextType::class, [
+                    'label' => 'captcha',
+                    'attr' => [
+                        'type' => 'captcha'
+                    ],
+                    'row_attr' => [
+                        'class' => 'captcha'
+                    ]
+                ]);
+            }
+        }
 
-			if ($session->get('capcha_code') == $formData['captcha']) {
+        $form = $formBuild->getForm();
+        $form->handleRequest($request);
 
-				$emailData = ['data' => ''];
+        if ($form->isSubmitted()) {
 
-				/* save to object  */
-				$newEntry = new DataObject\XxiiFormEntry();
-				$newEntry->setKey(\Pimcore\Model\Element\Service::getValidKey(time() . '-entry', 'object'));
-				$newEntry->setParentId($formEntryFolder);
-				$newEntry->setRawData(json_encode($formData));
+            $formData = $form->getData();
 
-				$items = new DataObject\Fieldcollection();
+            if ($session->get('capcha_code') == $formData['captcha']) {
 
-				foreach ($formData as $key => $input) {
+                $emailData = ['data' => ''];
 
-					$item = new DataObject\Fieldcollection\Data\EmailField();
-					$item->setName($key);
+                /* save to object  */
+                $newEntry = new DataObject\XxiiFormEntry();
+                $newEntry->setKey(\Pimcore\Model\Element\Service::getValidKey(time() . '-entry', 'object'));
+                $newEntry->setParentId($formEntryFolder);
+                $newEntry->setRawData(json_encode($formData));
 
-					$fieldValue = '';
+                $items = new DataObject\Fieldcollection();
 
-					if (is_array($input)) {
-						foreach ($input as $checkbox) {
-							$fieldValue .= ',' . $checkbox;
-						}
-					} else {
-						$fieldValue = $input;
-					}
+                foreach ($formData as $key => $input) {
 
-					$item->setFieldValue($fieldValue);
+                    $item = new DataObject\Fieldcollection\Data\EmailField();
+                    $item->setName($key);
 
-					$items->add($item);
+                    $fieldValue = '';
 
-					/* email data */
+                    if (is_array($input)) {
+                        foreach ($input as $checkbox) {
+                            $fieldValue .= ',' . $checkbox;
+                        }
+                    } else if (is_object($input )) {
+                        // upload file logic
+                        $baseUrl = $request->getSchemeAndHttpHost();
 
-					$emailData['data'] .= '<b>' . $key . '</b>: ' . $fieldValue . '<br />';
+                        $file = $input;
 
-				}
+                        $contents = file_get_contents($file->getPathname());
 
-				$newEntry->setFields($items);
-				$newEntry->save();
+                        $newFilename = uniqid() . '.' . $file->guessExtension();
 
-				/* send email if configured  */
+                        $asset = new \Pimcore\Model\Asset();
+                        $asset->setFilename($newFilename);
+                        $asset->setData($contents);
+                        $asset->setParent($relationsFolder);
+                        $asset->save();
 
-				$mail = new \Pimcore\Mail();
-				$mail->setDocument($formEmailTmpl);
-				$mail->setParams($emailData);
+                        $item->setRelation($asset);
+                        $fieldValue = $baseUrl . $asset->getRealFullPath();
+                    } else {
+                        $fieldValue = $input;
+                    }
 
-				if ($mail->send()) {
-					$formData['thxPage'] = $thxPage;
-					$formData['success'] = true;
-				} else {
-					$session->set('capcha_code', $randStrng);
-					$formData['success'] = false;
-					$formData['captchaView'] = $this->b64img($randStrng, 4, 213, 59);
-					$formData['error']['captcha'] = 'Captcha ungülitg';
-				}
-			} else {
-				$formData['success'] = false;
-				$session->set('capcha_code', $randStrng);
-				$formData['captchaView'] = $this->b64img($randStrng, 4, 213, 59);
-				$formData['error']['captcha'] = 'Captcha ungülitg';
-			}
-		} else {
-			$session->set('capcha_code', $randStrng);
-			$formData['captchaView'] = $this->b64img($randStrng, 4, 213, 59);
-		}
+                    $item->setFieldValue($fieldValue);
 
-		return ['form' => $form, 'formData' => $formData];
+                    $items->add($item);
+
+                    /* email data */
+
+                    $emailData['data'] .= '<b>' . $key . '</b>: ' . $fieldValue . '<br />';
+
+                }
+
+                $newEntry->setFields($items);
+                $newEntry->save();
+
+                /* send email if configured  */
+
+                $mail = new \Pimcore\Mail();
+                $mail->setDocument($formEmailTmpl);
+                $mail->setParams($emailData);
+
+
+                $formData['thxPage'] = '';
+                $formData['success'] = false;
+
+                if ($mail->send()) {
+                    $formData['thxPage'] = $thxPage;
+                    $formData['success'] = true;
+                } else {
+                    $session->set('capcha_code', $randStrng);
+                    $formData['success'] = false;
+                    $formData['captchaView'] = $this->b64img($randStrng, 4, 213, 59);
+                    $formData['error']['captcha'] = 'Captcha ungülitg';
+                }
+            } else {
+                $formData['success'] = false;
+                $session->set('capcha_code', $randStrng);
+                $formData['captchaView'] = $this->b64img($randStrng, 4, 213, 59);
+                $formData['error']['captcha'] = 'Captcha ungülitg';
+            }
+        } else {
+            $session->set('capcha_code', $randStrng);
+            $formData['captchaView'] = $this->b64img($randStrng, 4, 213, 59);
+        }
+
+        return ['form' => $form, 'formData' => $formData, 'formClass' => $formClass];
 
 //		return [
 //			'form' => $form,
@@ -320,46 +367,46 @@ class Xxiicontact extends AbstractTemplateAreabrick
 //			'error' => $error,
 //			'formId' => $formId,
 //		];
-	}
+    }
 
-	/**
-	 * @param $str
-	 * @param int $fs
-	 * @param int $w
-	 * @param int $h
-	 * @param int[] $b
-	 * @param int[] $t
-	 * @return string
-	 */
-	function b64img($str, $fs = 1, $w = 100, $h = 59, $b = array('r' => 241, 'g' => 88, 'b' => 42), $t = array('r' => 22, 'g' => 27, 'b' => 36)): string
-	{
-		$tmp = tempnam(sys_get_temp_dir(), 'img');
+    /**
+     * @param $str
+     * @param int $fs
+     * @param int $w
+     * @param int $h
+     * @param int[] $b
+     * @param int[] $t
+     * @return string
+     */
+    function b64img($str, $fs = 1, $w = 100, $h = 59, $b = array('r' => 241, 'g' => 88, 'b' => 42), $t = array('r' => 22, 'g' => 27, 'b' => 36)): string
+    {
+        $tmp = tempnam(sys_get_temp_dir(), 'img');
 
-		$image = imagecreate($w, $h);
-		$imageLarge = imagecreate($w, $h);
+        $image = imagecreate($w, $h);
+        $imageLarge = imagecreate($w, $h);
 
-		$bck = imagecolorallocate($image, $b['r'], $b['g'], $b['b']);
-		$txt = imagecolorallocate($image, $t['r'], $t['g'], $t['b']);
+        $bck = imagecolorallocate($image, $b['r'], $b['g'], $b['b']);
+        $txt = imagecolorallocate($image, $t['r'], $t['g'], $t['b']);
 
-		imagestring($image, $fs, $w / 8, $h / 8, $str, $txt);
+        imagestring($image, $fs, $w / 8, $h / 8, $str, $txt);
 
-		imagecopyresampled($imageLarge, $image, 0, 0, 0, 0, $w * 2, $h * 2, $w, $h);
+        imagecopyresampled($imageLarge, $image, 0, 0, 0, 0, $w * 2, $h * 2, $w, $h);
 
-		imagepng($imageLarge, $tmp);
-		imagedestroy($imageLarge);
+        imagepng($imageLarge, $tmp);
+        imagedestroy($imageLarge);
 
-		$data = base64_encode(file_get_contents($tmp));
-		@unlink($tmp);
-		return $data;
-	}
+        $data = base64_encode(file_get_contents($tmp));
+        @unlink($tmp);
+        return $data;
+    }
 
-	public function getHtmlTagOpen(Info $info): string
-	{
-		return "";
-	}
+    public function getHtmlTagOpen(Info $info): string
+    {
+        return "";
+    }
 
-	public function getHtmlTagClose(Info $info): string
-	{
-		return "";
-	}
+    public function getHtmlTagClose(Info $info): string
+    {
+        return "";
+    }
 }
